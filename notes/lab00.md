@@ -5,9 +5,9 @@
 ## task
 
 - [x] Which command walks a file hierarchy in search of a keyword?
-- [ ] Which command displays information about processes running on your machine?
-- [ ] Which command terminates a process?
-- [ ] Which command can help you find the difference between two files?
+- [x] Which command displays information about processes running on your machine?
+- [x] Which command terminates a process?
+- [x] Which command can help you find the difference between two files?
 
 
 
