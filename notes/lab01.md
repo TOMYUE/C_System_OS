@@ -3,9 +3,9 @@
 # lab01
 
 - [x] gdb.txt
-- [ ] `cgdb` debugging exercise
-- [ ] `Valgrind`ing away
-- [ ] Pointers and Structures in C
+- [x] `cgdb` debugging exercise
+- [x] `Valgrind`ing away
+- [x] Pointers and Structures in C
 
 
 
@@ -103,6 +103,168 @@
 
    `(gdb) quit`
 
+   
+
+## Debugging w/ YOU(ser input)
+
+If our program need input from `stdIn`(this will be clearly explained in os related class, like cs162, 6.s081, csapp, etc.), then how do we debug this kind of program!
 
 
-## 
+
+**Redirction!**
+
+
+
+Let's if our program!
+
+```c
+#include <stdio.h>
+
+#define MAX_LEN 80
+
+int main(int argc, char *argv[]) {
+    char a_word[MAX_LEN];
+
+    printf("What's your name?\n");
+    fgets(a_word, MAX_LEN, stdin);
+    printf("Hey, %sI just really wanted to say hello to you.\nI hope you have a wonderful day.", a_word);
+
+    return 0;
+}
+```
+
+In normal way, we can't well test whether it's right or not, so by creating a `*.txt` like `name.txt` and redirect it when running we could  elegently solve the problem above.
+
+Let's see!
+
+![Screen Shot 2022-04-19 at 20.32.40](lab01.assets/Screen%20Shot%202022-04-19%20at%2020.32.40.png)
+
+Well, at this moment, I begin to feel `debugging` is awesome intersting!
+
+Truly!
+
+
+
+## Valgrind’ing away
+
+Even with a debugger, we might not be able to catch all bugs. Some bugs are what we refer to as “bohrbugs”, meaning they manifest reliably under a well-defined, but possibly unknown, set of conditions. Other bugs are what we call “heisenbugs”, and instead of being determinant, they’re known to disappear or alter their behavior when one attempts to study them. **We can detect the first kind with debuggers, but the second kind may slip under our radar because they’re (at least in C) often due to mis-managed memory.**
+
+Valgrind is a program which emulates your CPU and tracks your memory accesses. 
+
+
+
+![image-20220419210418621](lab01.assets/image-20220419210418621.png)
+
+Obviously, the `sizeof(a)` in `no_segfault_ex.c` remain problem as well, but why this make no segmentation fault! And what is segmentation fault!
+
+- `valgrind ./segfault_ex`
+
+  ![image-20220419210721486](lab01.assets/image-20220419210721486.png)
+
+- `valgrind ./no_segfault_ex`
+
+  ![image-20220419210819144](lab01.assets/image-20220419210819144.png)
+
+- `valgrind ./no_segfault_ex_modified`
+
+  ![image-20220419211637449](lab01.assets/image-20220419211637449.png)
+
+
+
+## Pointers and Structures in C
+
+`ll_cycle.c`
+
+To determine whether a single linked list has a loop.
+
+This is a classic algorithm problem, the haedest version is to return the start node of the loop, but for us we only need to figure out whether our linklist has a loop(`return 1`) or hasn't(`reutrn 0`). See [Wikipedia article](https://en.wikipedia.org/wiki/Cycle_detection#Floyd.27s_Tortoise_and_Hare) for advice! 
+
+`ll_cycle.h`
+
+```c
+#ifndef LL_CYCLE_H
+#define LL_CYCLE_H
+typedef struct node {
+    int value;
+    struct node *next;
+} node;
+
+int ll_has_cycle(node *);
+#endif%
+```
+
+
+
+`ll_cycle.c`
+
+```c
+#include <stddef.h>
+#include "ll_cycle.h"
+
+int ll_has_cycle(node *head) {
+    /* your code here */
+    return 0;
+}
+```
+
+#### Answer
+
+```c
+#include <stddef.h>
+#include "ll_cycle.h"
+
+int ll_has_cycle(node *head) {
+    /* your code here */
+    node *fast = head;// hare
+    node *slow = head;// tortoise
+    while(fast && fast->next){
+        slow = slow->next;
+        fast = fast->next->next;
+        if(slow == fast){
+            return 1;
+        }
+    }
+    return 0;
+}
+```
+
+One more thing
+
+If we want solve harder version of this, then how?
+
+![image-20220420205307929](lab01.assets/image-20220420205307929.png)
+
+$d_{slow}: x + y$
+
+$d_{fast}: x + y + n*(y+z)$
+$$
+To \ find \ the\ entry \ of \ the \ loop:
+\\
+d_{slow} = d_{fast}
+\\
+x = (n-1)(y+z) + z
+$$
+And we know that (y+z) is a complete circle, so we could find the solution as follow: One pointer from the head node and one pointer from the meeting node, both pointers go one node at a time, then when these two pointers meet is the entrance node of the circular link list.
+
+```c
+int ll_detect_cycle(node *head) {
+    /* your code here */
+    node *fast = head;// hare
+    node *slow = head;// tortoise
+    while(fast && fast->next){
+        slow = slow->next;
+        fast = fast->next->next;
+        if(slow == fast){ // find the meeting point
+            node *index1 = fast; // go 'z' distance
+          	node *index2 = head; // go 'x' distance
+          	while(index1 != index2){
+              index1 = index1->next;
+              index2 = index2->next;
+            }
+          	return index1;
+        }
+    }
+    return NULL;
+}
+```
+
