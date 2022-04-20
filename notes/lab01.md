@@ -258,8 +258,8 @@ int ll_detect_cycle(node *head) {
             node *index1 = fast; // go 'z' distance
           	node *index2 = head; // go 'x' distance
           	while(index1 != index2){
-              index1 = index1->next;
-              index2 = index2->next;
+                 index1 = index1->next;
+                 index2 = index2->next;
             }
           	return index1;
         }
